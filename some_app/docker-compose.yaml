@@ -1,0 +1,15 @@
+version: '3'
+services:
+  some_app:
+    hostname: some_app
+    build: .
+    volumes:
+      - ./:/app
+    ports:
+      - "6001:6001"
+    networks:
+      - obo-backend
+networks:
+  obo-backend:
+    name: obo-backend
+    external: true

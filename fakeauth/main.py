@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Request
-from jwks import get_or_create_jwk, create_signed_jwt
+from jwks import generate_jwk, get_or_create_jwk, create_signed_jwt
+from auth import get_token
 from jwcrypto import jwk, jwt
 from datetime import datetime, timedelta
 import requests
 import json
+import os
 
 app = FastAPI()
 
@@ -65,10 +67,10 @@ def token_endpoint(request: Request):
 
 # must restart tokendings and use a new key when registering a new client to 
 # ensure they get a different key
-@app.get("/try-reg")
-def try_reg():
+@app.get("/try-reg/{app_id}/{inbound_app_id}")
+def try_reg(app_id, inbound_app_id):
     # sign using well known
-    signed_token = create_signed_jwt(key)
+    signed_token = get_token()
     client_jwks = None
     try:
         key_string = json.dumps(AUTH_CLIENT_JWKS["keys"][0])
@@ -78,8 +80,8 @@ def try_reg():
 
     client_name = "some_app"
     claims = {
-        "appId": client_name,
-        "accessPolicyInbound": ["test_app"],
+        "appId": app_id,
+        "accessPolicyInbound": [inbound_app_id],
         "accessPolicyOutbound": []
     }
 
@@ -88,13 +90,14 @@ def try_reg():
     s = software_statement.serialize()
 
     payload = {
-        "client_name": client_name,
+        "client_name": app_id,
         "jwks": {"keys": [key]},
         "software_statement": s,
     }
     keys[client_name] = key
     headers = {'Authorization': f'Bearer {signed_token}', "Content-Type": "application/json"}
-    res = requests.post("http://tokendings:8080/registration/client", json=payload, headers=headers)
+    host = os.getenv("TOKENDINGS_URL", "http://tokendings:8080")
+    res = requests.post(f"{host}/registration/client", json=payload, headers=headers)
     if res.status_code > 200:
         return res.content
     return res.json()

@@ -12,6 +12,8 @@ services:
       - "6348:6348"
     networks:
       - obo-backend
+    env_file:
+      - "local.env"
 
 networks:
   obo-backend:

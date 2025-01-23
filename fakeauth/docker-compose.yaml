@@ -2,11 +2,14 @@ version: '3'
 services:
   fake_auth_server:
     hostname: fake_auth
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/fredrikmorstad/fake_auth/fake_auth:latest
     volumes:
       - ./:/app
     ports:
-      - "3000:3000"
+      - "6348:6348"
     networks:
       - obo-backend
 

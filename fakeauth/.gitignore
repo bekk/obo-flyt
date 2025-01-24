@@ -1,4 +1,4 @@
-*.txt
 __pycache__
 .venv
 local.env
+PAT.TXT

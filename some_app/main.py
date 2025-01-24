@@ -16,9 +16,9 @@ def create_client_assertion():
     key_string = json.dumps(JWK_KEY)
     client_jwks = jwk.JWK.from_json(key_string)
     claims = {
-        "sub": "some_app", # who am i
-        "iss": "some_app", # who am i
-        "aud": "http://tokendings:8080/token", # always tokendings when exchanging
+        "sub": CLIENT_ID, # who am i
+        "iss": CLIENT_ID, # who am i
+        "aud": "http://tokendings:7456/token", # always tokendings when exchanging
         "jti":  str(uuid.uuid4()),
         "nbf": int(datetime.utcnow().timestamp()),
         "iat": int(datetime.utcnow().timestamp()),
@@ -28,8 +28,8 @@ def create_client_assertion():
     token.make_signed_token(client_jwks)
     return token.serialize()
 
-@app.get("/test/token")
-def request_token():
+@app.get("/test/token/{aud}/{token}")
+def request_token(aud: str, token: str):
     client_assertion_token = create_client_assertion()
 
     payload = {
@@ -37,12 +37,12 @@ def request_token():
         "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
         "client_assertion": client_assertion_token, # assertion with key registered in tokendings
         "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
-        "subject_token": "eyJhbGciOiJSUzI1NiIsInR5cGUiOiJKV1QifQ.eyJhdWQiOiJzb21lX2FwcCIsImV4cCI6MTczNjk0MDI5MiwiaWF0IjoxNzM2ODUzODkyLCJpc3MiOiJodHRwOi8vZmFrZV9hdXRoOjMwMDAiLCJzdWIiOiJ0ZXN0QHRlc3QuY29tIn0.n9BF0213exN7Sa0od21D9oKGTwHgSISbvKVwn87Lxz6xvTs2ZWIPbBNeNAkK3UPO4VrKJXTcdffIzSLPqHSsKiAylBfomF2sCiAwGWRhNSWXYDCax4mUnL0U1TSxVaVjMSRqntbklejdSISYFqHbsW9D1NYOze7V41nhv3XHlkNggLO4wUspGxEQ0VowPK1D2-G4eyAG1X7QuxtpmlM2kGPnDOgTwci_m1YPbdTOBRxsHnzunkJWItVu56wPT5dfR-neiPcZ0VCpU6ClhF9COXU2ad0cVQU7fKvrMHlDJbNPY9oxmF2d-MqkftTtfI8XjHW7X-n1c80xVDMMpWzmWA", # original token from IDP
-        "audience": "test_app" # who do i want to talk to
+        "subject_token": token, # original token from IDP
+        "audience": aud # who do i want to talk to
     }
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    res = requests.post("http://tokendings:8080/token", data=payload, headers=headers)
+    res = requests.post("http://tokendings:7456/token", data=payload, headers=headers)
     if res.status_code > 200:
         return res.content
     return res.json()

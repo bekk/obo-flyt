@@ -1,6 +1,7 @@
 version: '3'
 services:
   some_app:
+    image: ghcr.io/fredrikmorstad/some_app/some_app:latest
     hostname: some_app
     build: .
     volumes:

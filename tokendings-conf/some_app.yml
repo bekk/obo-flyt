@@ -6,6 +6,9 @@ spec:
   image: ghcr.io/fredrikmorstad/some_app/some_app:latest
   port: 6349
   replicas: 1
+  env:
+    - name: a
+      value: a
   accessPolicy:
     outbound:
       rules:

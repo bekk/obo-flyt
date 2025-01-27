@@ -10,7 +10,6 @@ spec:
     - name: AUTH_CLIENT_ID
       value: dfb2cec9-3b6d-456b-a14f-649236247e3d
     - name: AUTH_CLIENT_SECRET
-      # insert secret here
       value: secret 
     - name: AUTH_SCOPE
       value: api://dfb2cec9-3b6d-456b-a14f-649236247e3d/.default

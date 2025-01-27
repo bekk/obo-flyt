@@ -6,7 +6,6 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/fredrikmorstad/fake_auth/fake_auth:latest
     volumes:
       - ./:/app
     ports:

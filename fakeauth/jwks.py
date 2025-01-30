@@ -16,7 +16,6 @@ def load_from_file():
         key = jwk.JWK.from_json(key_json)
     except:
         key = None
-
     return key
 
 def get_or_create_jwk():
@@ -24,10 +23,12 @@ def get_or_create_jwk():
     if key == None:
         key = generate_jwk()
         save_to_file(key.export(private_key=True))
+    print("pub: ", key.export_private())
+    print("priv: ", key.export_public())
     return key
 
 def generate_jwk():
-    return jwk.JWK.generate(kty='RSA', size=2048, kid='12345')
+    return jwk.JWK.generate(kty='RSA', size=2048, kid="1234")
 
 def create_signed_jwt(key):
     claims = {

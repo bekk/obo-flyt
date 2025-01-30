@@ -4,7 +4,6 @@ metadata:
   labels:
     control-plane: controller-manager
   name: jwker
-  # namespace: nais
 spec:
   replicas: 1
   selector:
@@ -17,12 +16,6 @@ spec:
     spec:
       containers:
       - args:
-        # - --storageBucket=jwker-test
-        # - --port=8080
-      #   - --credentialsPath=/var/run/secret/sa-credentials.json
-      #   - --tokendingsUrl=https://tokendings.dev-gcp.nais.io
-      #   command:
-      #   - /jwker
         image: ghcr.io/fredrikmorstad/jwker/jwker:latest
         env: 
           - name: JWKER_CLIENT_ID
@@ -33,8 +26,7 @@ spec:
             value: kind-skiperator
           - name: JWKER_PRIVATE_JWK
             value: | 
-              {"p":"-UTsojJQES7Rxg-wyiRBMwI7qyBfjiBXkhOfhwLZPvaNFnL5O4PDZOl_5RpYSKYm3zhe1sI37P8kKLXpWKGTtahPU8pJp6wi3wKa14BjHfBoUD8vC8vPR6LPzCkaksuSLxnabmCqi5BIgM4Ktt8L365wxj3XvZk78jdqkfZ5TrU","kty":"RSA","q":"97x12F8J4rdh4Fxlnu_h8-RusL4JRFfXg3NC5Xg-sCUYA8qgObHAyQpeNj6WCN10G_OxdUaRvK-0RY0eeiAK2QgIgmQBhaRUcIk1_TE7NS30L8DbsLvJUkR38YrrSlGipMgIp2p1cPH2o0qqUREu3kBHpyibMtYJhP4GTtYo73k","d":"owLjH1SbTKdgzK85s49oWGJXQ_0JZ0Gl_eYGodAXDJFRwRnCWcqmaQ4mtve8LuQKNhyfNzGL0q5B1EwzIQUTDA53OuU_nMLQREqajA7rl_EpAJaSt41AwE183Dq61BAgQvKCNBK2av_ih_eX5fZ0uwFarL4VNmP6ac-9SbOFKYWhYPksXkw9PO8PfjtVcR8mLC48LHfc-4WDZFb_7PZEGUE7LWIqfEq_LkMOx-zyB_aAENCgyjjJ00ArFpHwK6kJtuYW_vWCTUirn3V5EddFNuR9ueSo-OptOiR3U4v6zJDGdtvISP0wjLFOfyXfhy9gFOYaA9vX7O3AtXgpgG_gAQ","e":"AQAB","qi":"eDUmJ_GRtjbLzaF-bHQzIxxV7wJ8ta2Sc60yATDh1lfMOv1dKeVm5oXJIn-wz9yUVZqALyaXOXU4ajG3prAUuueoB7cVMx03AC91p3zMdTcCmhGfX3tT2VovpdrAjB7d6EtMYV5tHSsNBpkCMZQ4Gbp0oqaJFZEvCvKL_BuPKJk","dp":"baDBjcgg7J2xxrDp6M0vG5b01RtEy0YwHV-h_ofjMczPWjswn9sgWUZUaFdA0pq4Z93r3_nFDOddaMYwnTlatD8UvF4wLJ0JLRmBLhwZ-3Xa-sf_EeoN_Ix_ZWQCeuMrJKnzJi4_c2f-ax-zGKBaIYMfuCBEvO8irTFwHkfPLC0","dq":"VznI-GUGEwhkct21fg-SLBB7FMnkc2bGX-ceX7NFxzlYSkV2wrmeWmrHHyxMIVTvw8O68MLnH1tyCqcUWwWbLC1S6a4Shx6ECJeXJc3GvgOvHX03HPQRf2DSJn62N5WkwYYY3fFy5lCbeYUZkK-PI_vX_rgiZPTNp0DVsb5f7Wk","n":"8TkBrXSAMTfBCnN1eQYUk6swUGUSVkKqim2HcbQe3vBEi7hATEiChL49z1f40w2l4qEMUpgQTUigkdacAc39I7VKaZkf0573KZa-pra0BDxOWGnqQUtseK73XM6Pn4Im9EU1fqQhSBUqOAMky40aLo4u4RFmCZRCTKMAJaVzOE0aSslmW0wN2SPQfMwqcglkAcoJhqn8kejJ7kA6j8DpR1Q0CTy9hhn63DRJSKD3Lx93g9YiBCBYXYQTBH4-ZUePPk6rHJvU6g40xbfRCWOjG6SSrEOKBL-qZGxIA_MUYJpNRH1YmHl5mzp9KahCplPBSWRaCSo4n8Q_68f-WhkujQ"}
-
+              {"d":"EeEtuQrs5k_kRasM-tOWuTe_mEjXtGJsjfTZId0v8lZ43r-LasZHq07OVERiWLv6grlUVKkxQ45dRh4yMK3YHGsCJKapBuRXKNfiwNYq9IrzHR04k8ADe9SfLS3Bu1_ig15SFEytzxYVn2Dswh6mDF1dtbL8z5xwLmOJhdL0UloBleYRvThkG_oQR8DzURUucS8newhTDE6xO5O5uAPmkDAEdkekWf93UQKipPv-QGA_dFf7Z5xB90qX8mW5qyAUcnaajPw6FufuP_VrGhfuTMPsJ0Aw1JBfxrazZFWPwGRuFFUaxbRN-OS7GLTpN9zd3DfX4gDsMs4vpJT7kkk10Q","dp":"OVbxZhOnW5rV_l5eKke1MfM7WuKRjiEjd0eL4Q8fQtFE9zNVhac3MimJQSUv4teTNJGFic7f9TTIpY25I9dQcDiqdp6Kob-7gqeOC8eAGNGtPi6ogO80WIri7XZ-mW4hBMp6UaXqC9KC7AoW0zbQMmkNWDkXg8KfnquCu29EQvE","dq":"ZgpZZ-mBBeMYHLBq4rmQyQA8aqJGbcMWWNGyzzlgsusYFYg9pKYWLwFVZPoQjzwAD4QTIGIUow3TC5kUkEwP7IiwjyuQwpexM3csSeK6Ag0MctmECehbIKfYN8TyOPM_TjxMJejOMs7BHwY2jnZ7Iakhx5yLvV2mfA2EhGz_cbU","e":"AQAB","kid":"1234","kty":"RSA","n":"vtHS1ulZpqxYPJZQmZrdgUPfMT4AR8sYL1VfLHwZc7bNo4fm1VRS0XwaRFYyOBBk1SXTCc7ojM8aO10NOHVYUWxMpr8mcxjWlFnn3xq0D_Z7DAKHt2cjIG2EPRzloH76qfqUCqmIHULTRuIavsOBmbE7dhTC63KKoO10i6KqP6iDeuqEds7-PyaqjB4F8-kgL9ukdVfo9AmWEnIm0bUvnNAhdyozoyGcmdI1bbtGWOo0RSb1t94LgVvWrpLzQulEfgHZpoW-TbrLlKhEA311BORSs55RhY8xDyijHNZQ-aShpQkROI7VELHyS6p54339g0z-FKp9Uwa8KQ2uijPp7Q","p":"6zv2JRlLYswnDmmMqYLFnYRW9CgBa-Aq9Cx41qfJi8NLLlVL_ZN1wg8WE9Bj3la6cAbUEIthzVc40G12Tk49HK-91lGmzy1zf6gQ2QD5vUSi4FEhNp_rGWtgE2GLn_1Y1268Gpr1DPkjHqPalh3krk7vd3ENbTZ9wNC7ikew75E","q":"z6oj5v91e1q6erKnvrjCj_Fqdai88heklEaW16xespfoibBrEmau6kUd4ojbKgCE4ZP8gX4ANzisW6TFoyNafqQ7HKSux87euW9EpyfdwmpGGTc7k9NMwtoIJzduqkaL6IebWBzXhpHn5Sguhri-qeJoQa6TSfdFKraK5Pm-Hp0","qi":"XjFAhzFySRwuXHhVtGTwt0UEnEwkfLHW606S4UD5bylSMSdroKAtb2KEnWuXf9tkixCW35JZAfPqBaAeqYn3Wz9hScZgV3qqJm_aJt1wN7Aih7mG__4dSOqWOp95MMZQs9HVfUqyTtz8Vv9O9PDzZf60CSHVQfVvPCFkHukLlcM"}        
         # livenessProbe:
         #   failureThreshold: 3
         #   httpGet:
@@ -57,8 +49,8 @@ spec:
         #   name: jwker-sa-credentials
         #   readOnly: true
       # terminationGracePeriodSeconds: 10
-      # serviceAccount: jwker
-      # serviceAccountName: jwker
+      serviceAccount: jwker
+      serviceAccountName: jwker
       # imagePullSecrets:
       # - name: gpr-credentials
       # volumes:
@@ -80,14 +72,20 @@ metadata:
   labels:
     app: jwker
   name: jwker
+  namespace: default
 rules:
 - apiGroups:
   - '*'
   resources:
-  - jwkers
-  - events
-  - namespaces
-  - secrets
+    - "*"
+  # resources:
+  # - jwkers
+  # - events
+  # - namespaces
+  # - secrets
+  # - pods
+  # - replicaset
+  # - service
   verbs:
   - get
   - create

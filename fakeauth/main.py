@@ -121,4 +121,4 @@ def generate_sub_token(aud):
 
 @app.get("/discovery/v2.0/keys")
 def jwks():
-    return {"keys": [key]}
+    return {"keys": [AUTH_CLIENT_JWKS["keys"][0], key]}

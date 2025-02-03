@@ -18,8 +18,8 @@ spec:
       - args:
         image: ghcr.io/fredrikmorstad/jwker/jwker:latest
         env: 
-          - name: JWKER_CLIENT_ID
-            value: dfb2cec9-3b6d-456b-a14f-649236247e3d
+          # - name: JWKER_CLIENT_ID
+          #   value: dfb2cec9-3b6d-456b-a14f-649236247e3d
           - name: TOKENDINGS_URL
             value: http://tokendings:7456
           - name: CLUSTER_NAME

@@ -6,14 +6,30 @@ spec:
   image: ghcr.io/fredrikmorstad/some_app/some_app:latest
   port: 6349
   replicas: 1
-  jwker:
-    - enable: true
   accessPolicy:
     outbound:
       rules:
         - application: tokendings
-        - application: some-app
+        # - application: test-app
+        - application: fake-auth
     inbound:
       rules:
         - application: tokendings
-        - application: some-app
+        # - application: test-app
+        - application: fake-auth
+--- 
+apiVersion: nais.io/v1
+kind: Jwker
+metadata:
+  name: jwker-some-app
+spec:
+  accessPolicy:
+    inbound:
+      rules:
+        - application: tokendings
+        # - application: test-app
+    outbound:
+      rules:
+        - application: tokendings
+        # - application: test-app
+  secretName: some-app

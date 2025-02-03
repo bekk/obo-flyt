@@ -2,6 +2,7 @@ apiVersion: skiperator.kartverket.no/v1alpha1
 kind: Application
 metadata:
   name: database
+  namespace: obo
 spec:
   image: postgres
   port: 5432
@@ -20,9 +21,9 @@ spec:
     - emptyDir: postgresql
       mountPath: /var/run/postgresql
   accessPolicy:
-    outbound:
-      rules:
-        - application: tokendings
+    # outbound:
+    #   rules:
+    #     - application: tokendings
     inbound:
       rules:
         - application: tokendings

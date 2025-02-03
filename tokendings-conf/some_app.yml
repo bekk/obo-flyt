@@ -10,7 +10,6 @@ spec:
     outbound:
       rules:
         - application: tokendings
-        # - application: test-app
         - application: fake-auth
     inbound:
       rules:
@@ -27,9 +26,10 @@ spec:
     inbound:
       rules:
         - application: tokendings
-        # - application: test-app
+        - application: fake-auth
     outbound:
       rules:
         - application: tokendings
+        - application: fake-auth
         # - application: test-app
   secretName: some-app

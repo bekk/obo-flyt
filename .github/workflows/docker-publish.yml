@@ -6,35 +6,31 @@ name: Docker
 # documentation.
 
 on:
-  schedule:
-    - cron: '44 16 * * *'
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: ["v*.*.*"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
 
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: ./fake_auth/Dockerfile
+          - dockerfile: ./fakeauth/Dockerfile
             image: ${{ github.repository }}/fake-auth
           - dockerfile: ./some_app/Dockerfile
             image: ${{ github.repository }}/some-app
           - dockerfile: ./test_app/Dockerfile
             image: ${{ github.repository }}/test-app
-            
+
     permissions:
       contents: read
       packages: write
@@ -52,7 +48,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20 #v3.5.0
         with:
-          cosign-release: 'v2.2.4'
+          cosign-release: "v2.2.4"
 
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache

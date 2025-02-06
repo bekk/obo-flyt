@@ -4,7 +4,7 @@ metadata:
   name: some-app
   namespace: obo
 spec:
-  image: ghcr.io/fredrikmorstad/some_app/some_app:latest
+  image: ghcr.io/bekk/obo-flyt/some-app:latest
   port: 6349
   replicas: 1
   accessPolicy:

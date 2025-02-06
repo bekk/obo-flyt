@@ -24,11 +24,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - dockerfile: ./fakeauth/Dockerfile
+          - context: ./fakeauth
             image: ${{ github.repository }}/fake-auth
-          - dockerfile: ./some_app/Dockerfile
+          - context: ./some_app
             image: ${{ github.repository }}/some-app
-          - dockerfile: ./test_app/Dockerfile
+          - context: ./test_app
             image: ${{ github.repository }}/test-app
 
     permissions:
@@ -80,8 +80,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
-          context: .
-          file: ${{ matrix.dockerfile }}
+          context: ${{ matrix.context }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

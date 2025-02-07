@@ -4,7 +4,7 @@ metadata:
   name: fake-auth
   namespace: obo
 spec:
-  image: ghcr.io/bekk/obo-flyt/fake-auth:latest
+  image: ghcr.io/bekk/obo-flyt/fake-auth:main
   port: 6348
   replicas: 1
   env:

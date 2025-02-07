@@ -11,11 +11,12 @@ app = FastAPI()
 config.load_incluster_config()
 
 v1 = client.CoreV1Api()
+secrets = v1.read_namespaced_secret("some-app", "obo")
 
 # id registered in tokendings
-CLIENT_ID = v1.read_namespaced_secret("TOKEN-X-CLIENT-ID", "obo")
+CLIENT_ID = secrets.data["TOKEN-X-CLIENT-ID"]
 # jwk_key = key registered in tokendings
-JWK_KEY = v1.read_namespaced_secret("TOKEN-X-PRIVATE-JWK", "obo")
+JWK_KEY = secrets.data["TOKEN-X-PRIVATE-JWK"]
 
 
 def create_client_assertion():

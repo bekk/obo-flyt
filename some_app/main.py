@@ -3,6 +3,7 @@ from jwcrypto import jwk, jwt
 from datetime import datetime, timedelta
 from kubernetes import client, config
 from base64 import b64decode
+import json
 import requests
 import json
 import uuid
@@ -17,7 +18,7 @@ secrets = v1.read_namespaced_secret("some-app", "obo")
 # id registered in tokendings
 CLIENT_ID = b64decode(secrets.data["TOKEN_X_CLIENT_ID"])
 # jwk_key = key registered in tokendings
-JWK_KEY = b64decode(secrets.data["TOKEN_X_PRIVATE_JWK"])
+JWK_KEY = json.loads(b64decode(secrets.data["TOKEN_X_PRIVATE_JWK"]))
 
 
 def create_client_assertion():

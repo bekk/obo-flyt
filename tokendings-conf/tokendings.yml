@@ -49,3 +49,4 @@ spec:
         - application: fake-auth
         - application: database
         - application: jwker
+        - application: some-app

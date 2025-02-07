@@ -23,6 +23,7 @@ def read_secret(secrets, name):
 CLIENT_ID = read_secret(secrets, "TOKEN_X_CLIENT_ID")
 # jwk_key = key registered in tokendings
 JWK_KEY = json.loads(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
+TOKEN_ENDPOINT = read_secret(secrets, "TOKEN_X_TOKEN_ENDPOINT")
 
 
 def create_client_assertion():
@@ -31,7 +32,7 @@ def create_client_assertion():
     claims = {
         "sub": CLIENT_ID,  # who am i
         "iss": CLIENT_ID,  # who am i
-        "aud": "http://tokendings:7456/token",  # always tokendings when exchanging
+        "aud": TOKEN_ENDPOINT,  # always tokendings when exchanging
         "jti": str(uuid.uuid4()),
         "nbf": int(datetime.utcnow().timestamp()),
         "iat": int(datetime.utcnow().timestamp()),
@@ -56,7 +57,7 @@ def request_token(aud: str, token: str):
     }
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    res = requests.post("http://tokendings:7456/token", data=payload, headers=headers)
+    res = requests.post(TOKEN_ENDPOINT, data=payload, headers=headers)
     if res.status_code > 200:
         return res.content
     return res.json()

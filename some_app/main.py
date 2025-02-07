@@ -14,10 +14,15 @@ config.load_incluster_config()
 v1 = client.CoreV1Api()
 secrets = v1.read_namespaced_secret("some-app", "obo")
 
+
+def read_secret(secrets, name):
+    return b64decode(secrets.data[name]).decode()
+
+
 # id registered in tokendings
-CLIENT_ID = b64decode(secrets.data["TOKEN_X_CLIENT_ID"]).decode()
+CLIENT_ID = read_secret(secrets, "TOKEN_X_CLIENT_ID")
 # jwk_key = key registered in tokendings
-JWK_KEY = json.loads(b64decode(secrets.data["TOKEN_X_PRIVATE_JWK"]).decode())
+JWK_KEY = json.loads(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
 
 
 def create_client_assertion():

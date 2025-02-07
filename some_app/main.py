@@ -14,9 +14,9 @@ v1 = client.CoreV1Api()
 secrets = v1.read_namespaced_secret("some-app", "obo")
 
 # id registered in tokendings
-CLIENT_ID = secrets.data["TOKEN-X-CLIENT-ID"]
+CLIENT_ID = secrets.data["TOKEN_X_CLIENT-ID"]
 # jwk_key = key registered in tokendings
-JWK_KEY = secrets.data["TOKEN-X-PRIVATE-JWK"]
+JWK_KEY = secrets.data["TOKEN_X_PRIVATE-JWK"]
 
 
 def create_client_assertion():

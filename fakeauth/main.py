@@ -13,17 +13,10 @@ app = FastAPI()
 config.load_incluster_config()
 
 v1 = client.CoreV1Api()
-some_app_secrets = v1.read_namespaced_secret("some-app", "obo")
 
 
 def read_secret(secrets, name):
     return b64decode(secrets.data[name]).decode()
-
-
-# id registered in tokendings
-SOME_APP_CLIENT_ID = read_secret(some_app_secrets, "TOKEN_X_CLIENT_ID")
-# jwk_key = key registered in tokendings
-SOME_APP_JWK_KEY = json.loads(read_secret(some_app_secrets, "TOKEN_X_PRIVATE_JWK"))
 
 
 @app.post("/test_hostname")
@@ -68,7 +61,6 @@ keys = {
         "kid": "12345",
         "kty": "RSA",
     },
-    SOME_APP_CLIENT_ID: SOME_APP_JWK_KEY,
 }
 
 
@@ -136,6 +128,14 @@ def read_root():
 # used to "login" a user to be used as the subject token
 @app.get("/fake_auth/{aud}")
 def generate_sub_token(aud):
+    some_app_secrets = v1.read_namespaced_secret("some-app", "obo")
+    # id registered in tokendings
+    SOME_APP_CLIENT_ID = read_secret(some_app_secrets, "TOKEN_X_CLIENT_ID")
+    # jwk_key = key registered in tokendings
+    SOME_APP_JWK_KEY = json.loads(read_secret(some_app_secrets, "TOKEN_X_PRIVATE_JWK"))
+
+    keys[SOME_APP_CLIENT_ID] = SOME_APP_JWK_KEY
+
     claims = {
         "iss": "http://fake-auth:6348",
         "sub": "test@test.com",

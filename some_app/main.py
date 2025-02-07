@@ -12,21 +12,19 @@ app = FastAPI()
 config.load_incluster_config()
 
 v1 = client.CoreV1Api()
-secrets = v1.read_namespaced_secret("some-app", "obo")
 
 
 def read_secret(secrets, name):
     return b64decode(secrets.data[name]).decode()
 
 
-# id registered in tokendings
-CLIENT_ID = read_secret(secrets, "TOKEN_X_CLIENT_ID")
-# jwk_key = key registered in tokendings
-JWK_KEY = json.loads(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
-TOKEN_ENDPOINT = read_secret(secrets, "TOKEN_X_TOKEN_ENDPOINT")
+def create_client_assertion(secrets):
+    # id registered in tokendings
+    CLIENT_ID = read_secret(secrets, "TOKEN_X_CLIENT_ID")
+    # jwk_key = key registered in tokendings
+    JWK_KEY = json.loads(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
+    TOKEN_ENDPOINT = read_secret(secrets, "TOKEN_X_TOKEN_ENDPOINT")
 
-
-def create_client_assertion():
     key_string = json.dumps(JWK_KEY)
     client_jwks = jwk.JWK.from_json(key_string)
     claims = {
@@ -45,7 +43,10 @@ def create_client_assertion():
 
 @app.get("/test/token/{aud}/{token}")
 def request_token(aud: str, token: str):
-    client_assertion_token = create_client_assertion()
+    secrets = v1.read_namespaced_secret("some-app", "obo")
+    client_assertion_token = create_client_assertion(secrets)
+
+    TOKEN_ENDPOINT = read_secret(secrets, "TOKEN_X_TOKEN_ENDPOINT")
 
     payload = {
         "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
@@ -65,6 +66,10 @@ def request_token(aud: str, token: str):
 
 @app.get("/discovery/v2.0/keys")
 def jwks():
+    secrets = v1.read_namespaced_secret("some-app", "obo")
+
+    JWK_KEY = json.loads(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
+
     return {"keys": [JWK_KEY]}
 
 

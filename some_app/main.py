@@ -15,9 +15,9 @@ v1 = client.CoreV1Api()
 secrets = v1.read_namespaced_secret("some-app", "obo")
 
 # id registered in tokendings
-CLIENT_ID = b64decode(secrets.data["TOKEN_X_CLIENT_ID"])
+CLIENT_ID = b64decode(secrets.data["TOKEN_X_CLIENT_ID"]).decode()
 # jwk_key = key registered in tokendings
-JWK_KEY = json.loads(b64decode(secrets.data["TOKEN_X_PRIVATE_JWK"]))
+JWK_KEY = json.loads(b64decode(secrets.data["TOKEN_X_PRIVATE_JWK"]).decode())
 
 
 def create_client_assertion():

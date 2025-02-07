@@ -5,7 +5,6 @@ from kubernetes import client, config
 from base64 import b64decode
 import json
 import requests
-import json
 import uuid
 
 app = FastAPI()

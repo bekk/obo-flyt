@@ -1,0 +1,17 @@
+apiVersion: nais.io/v1
+kind: Jwker
+metadata:
+  name: test-app
+  namespace: obo
+spec:
+  accessPolicy:
+    inbound:
+      rules:
+        - application: tokendings
+        - application: fake-auth
+        - application: some-app
+    outbound:
+      rules:
+        - application: tokendings
+        - application: fake-auth
+  secretName: test-app

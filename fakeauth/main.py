@@ -158,4 +158,4 @@ key = get_or_create_jwk()
 
 @app.get("/discovery/v2.0/keys")
 def jwks():
-    return {"keys": [AUTH_CLIENT_JWKS["keys"], key]}
+    return {"keys": [AUTH_CLIENT_JWKS["keys"][0], key]}

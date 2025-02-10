@@ -31,7 +31,7 @@ spec:
     - name: AUTH_CLIENT_ID
       value: dfb2cec9-3b6d-456b-a14f-649236247e3d
     - name: ISSUER_URL
-      value: http://fake-auth:6348
+      value: http://tokendings:7456
     - name: SUBJECT_TOKEN_ISSUERS
       value: http://fake-auth:6348/.well-known/openid-configuration/
     - name: APPLICATION_PORT
@@ -49,3 +49,4 @@ spec:
         - application: fake-auth
         - application: database
         - application: jwker
+        - application: some-app

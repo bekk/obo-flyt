@@ -47,25 +47,6 @@ AUTH_CLIENT_JWKS = {
     ]
 }
 
-# map the keys registered at tokendings so we can sign the fake login
-keys = {}
-
-some_app_secrets = v1.read_namespaced_secret("some-app", "obo")
-# id registered in tokendings
-SOME_APP_CLIENT_ID = read_secret(some_app_secrets, "TOKEN_X_CLIENT_ID")
-# jwk_key = key registered in tokendings
-SOME_APP_JWK_KEY = json.loads(read_secret(some_app_secrets, "TOKEN_X_PRIVATE_JWK"))
-
-keys[SOME_APP_CLIENT_ID] = SOME_APP_JWK_KEY
-
-test_app_secrets = v1.read_namespaced_secret("test-app", "obo")
-
-TEST_APP_CLIENT_ID = read_secret(test_app_secrets, "TOKEN_X_CLIENT_ID")
-# jwk_key = key registered in tokendings
-TEST_APP_JWK_KEY = json.loads(read_secret(test_app_secrets, "TOKEN_X_PRIVATE_JWK"))
-
-keys[TEST_APP_CLIENT_ID] = TEST_APP_JWK_KEY
-
 
 # read by tokendings at starup
 @app.get("/.well-known/openid-configuration")
@@ -128,17 +109,17 @@ def read_root():
     return config
 
 
+key = get_or_create_jwk()
+
+
+@app.get("/discovery/v2.0/keys")
+def jwks():
+    return {"keys": [AUTH_CLIENT_JWKS["keys"][0], key]}
+
+
 # used to "login" a user to be used as the subject token
 @app.get("/fake_auth/{aud}")
 def generate_sub_token(aud):
-    some_app_secrets = v1.read_namespaced_secret("some-app", "obo")
-    # id registered in tokendings
-    SOME_APP_CLIENT_ID = read_secret(some_app_secrets, "TOKEN_X_CLIENT_ID")
-    # jwk_key = key registered in tokendings
-    SOME_APP_JWK_KEY = json.loads(read_secret(some_app_secrets, "TOKEN_X_PRIVATE_JWK"))
-
-    keys[SOME_APP_CLIENT_ID] = SOME_APP_JWK_KEY
-
     claims = {
         "iss": "http://fake-auth:6348",
         "sub": "test@test.com",
@@ -146,16 +127,7 @@ def generate_sub_token(aud):
         "iat": int(datetime.utcnow().timestamp()),
         "exp": int((datetime.utcnow() + timedelta(days=1)).timestamp()),
     }
-    key_string = json.dumps(keys[aud])
-    client_jwks = jwk.JWK.from_json(key_string)
+    client_jwks = jwk.JWK.from_json(key)
     token = jwt.JWT(header={"alg": "RS256", "type": "JWT"}, claims=claims)
     token.make_signed_token(client_jwks)
     return token.serialize()
-
-
-key = get_or_create_jwk()
-
-
-@app.get("/discovery/v2.0/keys")
-def jwks():
-    return {"keys": [AUTH_CLIENT_JWKS["keys"][0], key]}

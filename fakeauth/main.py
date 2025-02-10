@@ -127,7 +127,6 @@ def generate_sub_token(aud):
         "iat": int(datetime.utcnow().timestamp()),
         "exp": int((datetime.utcnow() + timedelta(days=1)).timestamp()),
     }
-    client_jwks = jwk.JWK.from_json(key)
     token = jwt.JWT(header={"alg": "RS256", "type": "JWT"}, claims=claims)
-    token.make_signed_token(client_jwks)
+    token.make_signed_token(key)
     return token.serialize()

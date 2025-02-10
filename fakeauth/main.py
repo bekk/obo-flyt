@@ -48,20 +48,23 @@ AUTH_CLIENT_JWKS = {
 }
 
 # map the keys registered at tokendings so we can sign the fake login
-keys = {
-    "test_app": {
-        "d": "Sx0CvZ4BfarypKZ3dBJcrGB_MRzpzbghyz2W9wp0ix1Z02DxLUNlGM6fQY8dE7eSjNayBc0F0f_mqg2dz6ZrRdoQsjp6OGlw4vK5akz3l5hnVZzDbbKwRajyrGJXSDV0A6pfXGG8h1CsNMAjMxOVQCp5eu-SinWdR_FvPBkBHNFCVSV4zvgqdNQENHtT6ZrZGbZ9v3ICrJ4tTAUcE4oBTuiX0uSTg_Jiw7Ce4c_8lFHmNT8sImsmVAftCYG3K4NN7ttTdp21KdhnTrHwMF_GoQFcy5kAsCjWZFu2bWyc4p2fZLfASogxpvoe0NzDaydG6Ak3EMYPCIhXWu9p_fLaoQ",
-        "e": "AQAB",
-        "n": "vHjZOPFqrxM0Kxjs-yB_o8L-Fb2EWmMMDyqWsPdrd4ub6pT3K8m5VaucicpLjnfaU-5Oq4hrpdhPrx9aXtvzOMW8lu6MXP3Jr17o1HnoTlT3e5rmadDgBZQ_cnCnHhFZuOK2yCw7fAwSDF9ivYaGpdDLIsaHpnT3Uk74hFvops8Ph-tzQ_faMjRplsD6ITsM2uX3gI0-uOLj9CVf4kNEP0U8Bgw7mhGrC9CAPoxGAcDgx3N_7jN_dCdB94nI3s5wOWcRjgT9vKl3CJNqpF0BBt9ij0z_uLLYwdrt0ho9OoUJJYiEZqHXKHU-XBVVvO65ZRTxyuPpdWkhVIYUZpY_mw",
-        "p": "-5RmlrjNSb9DjxHSCpyQL8-Quot0F3P2Y9z5M-VvNR-0WBmee-eb7KjN__wr2GrGiTL84e-gjZ2XnmKejtmBSDr37sEn7_kpe4QnI3jSjuIyXAtA65whCN3JLPuy38IQ6YwgbLDex3tIl0h7dr7KRk5RhzFk209ViJi9pQsFXss",
-        "q": "v8iXW2M8bYbryTcRD1L3qNPIgbHLji05y1BC113ew3pOrOd0nZLcjWOsJ-L2XUwIUskhu_YDwpMToeHA7WveBlgumeBx3nULeRcqYA_zVFl3OmT6o6Zj5bxukFbg9PoIEum8kePh0N47bNtnkW0WEgsRt8txRstfJ-h6pxMROHE",
-        "dp": "Sf_bsSfIkpGkwJeATcjBjJ6kNorAagmdBsC_uGkbLegWdveKK23z6ke42DwHdY_qt_58bcS7WAxrxZXCh8gog-N8fAjqw2ZpskAr9v4aCRc1sudIgEUbXm1GOGoMsk52BQxHmVDpJon3zy_tyP7Tppxw1LBNt0h9o0EyPzKfsMM",
-        "dq": "Acv5Twvg9w26i8oOSNx4IYbKbBykUZKu5e68kZP5kE9HCWuptgg4NMLoS_9eW4Vo1o232TD23A3Qs0WQLylBjUGqPhrSNklWcC39YaUEnJex_EQR7RKUAQUA7C1EMkddZ__0mlFOPky2tdBgagZhnI2p_tTTHNyu6YrOC16sXKE",
-        "qi": "ynaCsJj3LtVaNsgEnGvb0yBQGfjWX712lLX1VSSUTVaxmqQPkf83NytmDvGuJksMg5Hq3WI0rlOje7XBkIm_K_QxUVy9t0XcRC7QLmu4hevuYmJd-DGAIiWebji9HH5K99RbEE7b37xfkAzTEeRQAD4xN9_LlJY-4oTdDSGXrnA",
-        "kid": "12345",
-        "kty": "RSA",
-    },
-}
+keys = {}
+
+some_app_secrets = v1.read_namespaced_secret("some-app", "obo")
+# id registered in tokendings
+SOME_APP_CLIENT_ID = read_secret(some_app_secrets, "TOKEN_X_CLIENT_ID")
+# jwk_key = key registered in tokendings
+SOME_APP_JWK_KEY = json.loads(read_secret(some_app_secrets, "TOKEN_X_PRIVATE_JWK"))
+
+keys[SOME_APP_CLIENT_ID] = SOME_APP_JWK_KEY
+
+test_app_secrets = v1.read_namespaced_secret("test-app", "obo")
+
+TEST_APP_CLIENT_ID = read_secret(test_app_secrets, "TOKEN_X_CLIENT_ID")
+# jwk_key = key registered in tokendings
+TEST_APP_JWK_KEY = json.loads(read_secret(test_app_secrets, "TOKEN_X_PRIVATE_JWK"))
+
+keys[TEST_APP_CLIENT_ID] = TEST_APP_JWK_KEY
 
 
 # read by tokendings at starup
@@ -155,4 +158,4 @@ key = get_or_create_jwk()
 
 @app.get("/discovery/v2.0/keys")
 def jwks():
-    return {"keys": [AUTH_CLIENT_JWKS["keys"][0], key]}
+    return {"keys": [AUTH_CLIENT_JWKS["keys"], key]}

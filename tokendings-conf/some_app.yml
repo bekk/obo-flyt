@@ -21,7 +21,7 @@ spec:
 apiVersion: nais.io/v1
 kind: Jwker
 metadata:
-  name: jwker-some-app
+  name: some-app
   namespace: obo
 spec:
   accessPolicy:
@@ -33,5 +33,5 @@ spec:
       rules:
         - application: tokendings
         - application: fake-auth
-        # - application: test-app
+        - application: test-app
   secretName: some-app

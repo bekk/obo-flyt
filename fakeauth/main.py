@@ -1,18 +1,13 @@
 from fastapi import FastAPI, Request
-from jwks import generate_jwk, get_or_create_jwk, create_signed_jwt
+from jwks import get_or_create_jwk
 from auth import get_token
 from jwcrypto import jwk, jwt
 from datetime import datetime, timedelta
-from kubernetes import client, config
 from base64 import b64decode
 import requests
 import json
 
 app = FastAPI()
-
-config.load_incluster_config()
-
-v1 = client.CoreV1Api()
 
 
 def read_secret(secrets, name):

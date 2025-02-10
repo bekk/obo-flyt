@@ -10,10 +10,6 @@ import json
 app = FastAPI()
 
 
-def read_secret(secrets, name):
-    return b64decode(secrets.data[name]).decode()
-
-
 @app.post("/test_hostname")
 def test_name(hostname: str):
     res = requests.get(f"http://{hostname}/health")

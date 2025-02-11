@@ -18,11 +18,24 @@ spec:
         # - application: test-app
         - application: fake-auth
   env:
-    - name: JWKER_SECRET
+    - name: TOKEN_X_PRIVATE_JWK
       valueFrom:
         secretKeyRef:
-          key: jwker-some-app
-          name: some-app
+          key: TOKEN_X_PRIVATE_JWK
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_CLIENT_ID
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_TOKEN_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_TOKEN_ENDPOINT
+          name: jwker-some-app
+          optional: false
 
 ---
 apiVersion: nais.io/v1

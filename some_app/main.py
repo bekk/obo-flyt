@@ -6,6 +6,7 @@ from base64 import b64decode
 import json
 import requests
 import uuid
+import os
 
 app = FastAPI()
 
@@ -43,6 +44,8 @@ def create_client_assertion(secrets):
 
 @app.get("/test/token/{aud}/{token}")
 def request_token(aud: str, token: str):
+    secret_from_env = os.getenv("JWKER_SECRET")
+    print(secret_from_env)
     secrets = v1.read_namespaced_secret("some-app", "obo")
     client_assertion_token = create_client_assertion(secrets)
 

@@ -17,6 +17,13 @@ spec:
         - application: tokendings
         # - application: test-app
         - application: fake-auth
+  env:
+    - name: JWKER_SECRET
+      valueFrom:
+        secretKeyRef:
+          key: jwker-some-app
+          name: some-app
+
 ---
 apiVersion: nais.io/v1
 kind: Jwker
@@ -34,7 +41,7 @@ spec:
         - application: tokendings
         - application: fake-auth
         - application: test-app
-  secretName: some-app
+  secretName: jwker-some-app
 ---
 apiVersion: v1
 kind: ServiceAccount

@@ -64,15 +64,6 @@ def request_token(aud: str, token: str):
     return res.json()
 
 
-@app.get("/discovery/v2.0/keys")
-def jwks():
-    secrets = v1.read_namespaced_secret("some-app", "obo")
-
-    client_jwk = jwk.JWK.from_json(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
-
-    return {"keys": [client_jwk.export_public(as_dict=True)]}
-
-
 @app.get("/")
 def read_root():
     return {"Hello": "World!"}

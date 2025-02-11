@@ -87,7 +87,7 @@ key = get_or_create_jwk()
 
 @app.get("/discovery/v2.0/keys")
 def jwks():
-    return {"keys": [key]}
+    return {"keys": [key.export_public()]}
 
 
 # used to "login" a user to be used as the subject token

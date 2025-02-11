@@ -68,9 +68,11 @@ def request_token(aud: str, token: str):
 def jwks():
     secrets = v1.read_namespaced_secret("some-app", "obo")
 
-    JWK_KEY = json.loads(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
+    client_jwk = jwk.JWK.from_json(
+        json.loads(read_secret(secrets, "TOKEN_X_PRIVATE_JWK"))
+    )
 
-    return {"keys": [JWK_KEY]}
+    return {"keys": [client_jwk.export_public()]}
 
 
 @app.get("/")

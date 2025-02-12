@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
 from jwks import get_or_create_jwk
-from auth import get_token
 from jwcrypto import jwk, jwt
 from datetime import datetime, timedelta
 from base64 import b64decode

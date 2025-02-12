@@ -19,10 +19,6 @@ spec:
       value: pwd
     - name: DB_JDBC_URL
       value: jdbc:postgresql://database:5432/token-exchange?user=user&password=pwd
-    # - name: AUTH_WELL_KNOWN_URL
-    #   value: http://tokendings:7456/.well-known/oauth-authorization-server
-    # - name: AUTH_WELL_KNOWN_URL
-    #   value: http://fake-auth:6348/.well-known/openid-configuration
     - name: AUTH_ACCEPTED_AUDIENCE
       value: http://tokendings:7456/registration/client
     - name: AUTH_CLIENT_JWKS

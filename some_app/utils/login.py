@@ -10,5 +10,5 @@ def login_with_fake_auth(audience: str) -> jwt.JWT:
     response = requests.get(req_url)
     if response.status_code != 200:
         raise Exception(response.content)
-    token = jwt.JWT(jwt=response.text)
+    token = jwt.JWT(jwt=response.json())
     return token

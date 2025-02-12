@@ -43,7 +43,7 @@ async def check_valid_token(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    url = os.getenv("TOKEN_X_JWKS_URL") or ""
+    url = os.getenv("TOKEN_X_JWKS_URI") or ""
     jwk_keys = get_public_jwks(url, ttl_hash=get_ttl_hash())
     signing_keys = [key for key in jwk_keys if key.use == "sig"]
 

@@ -2,6 +2,7 @@ import os
 from typing import Annotated
 from fastapi import Depends, FastAPI
 from utils.auth import check_valid_token
+from utils.login import login_with_fake_auth
 from utils.tokenx import exchange_token
 from jwcrypto import jwt
 import requests
@@ -26,6 +27,25 @@ def read_root(token: Annotated[jwt.JWT, Depends(check_valid_token)]):
 def ping(service: str, valid_token: Annotated[jwt.JWT, Depends(check_valid_token)]):
     audience = f"kind-skiperator:obo:{service}"
     exchanged_token = exchange_token(valid_token, audience)
+
+    res = requests.get(
+        f"http://{service}:6349",
+        headers={"Authorization": f"Bearer {exchanged_token['access_token']}"},
+    )
+
+    if res.status_code != 200:
+        return {"error": res.content}
+
+    return res.json()
+
+
+# endpoint to login with fakeauth and ping another service
+@app.get("/login-and-ping/{service}")
+def login_and_ping(service: str):
+    token = login_with_fake_auth(client_id)
+
+    audience = f"kind-skiperator:obo:{service}"
+    exchanged_token = exchange_token(token, audience)
 
     res = requests.get(
         f"http://{service}:6349",

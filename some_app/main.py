@@ -25,18 +25,7 @@ def read_root(token: Annotated[jwt.JWT, Depends(check_valid_token)]):
 # endpoint to exchange token and ping another service
 @app.get("/ping/{service}")
 def ping(service: str, valid_token: Annotated[jwt.JWT, Depends(check_valid_token)]):
-    audience = f"kind-skiperator:obo:{service}"
-    exchanged_token = exchange_token(valid_token, audience)
-
-    res = requests.get(
-        f"http://{service}:6349",
-        headers={"Authorization": f"Bearer {exchanged_token['access_token']}"},
-    )
-
-    if res.status_code != 200:
-        return {"error": res.content}
-
-    return res.json()
+    return exchange_and_ping(service, valid_token)
 
 
 # endpoint to login with fakeauth and ping another service
@@ -44,6 +33,10 @@ def ping(service: str, valid_token: Annotated[jwt.JWT, Depends(check_valid_token
 def login_and_ping(service: str):
     token = login_with_fake_auth(client_id)
 
+    return exchange_and_ping(service, token)
+
+
+def exchange_and_ping(service: str, token: jwt.JWT) -> dict:
     audience = f"kind-skiperator:obo:{service}"
     exchanged_token = exchange_token(token, audience)
 

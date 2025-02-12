@@ -7,9 +7,12 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwcrypto import jwk, jwt, jws
 import time
 import requests
+import json
 
 
 security = HTTPBearer()
+
+client_id = os.getenv("TOKEN_X_CLIENT_ID") or ""
 
 
 def get_ttl_hash(seconds=3600):
@@ -51,10 +54,20 @@ async def check_valid_token(
 
     signing_keys.extend(fakeauth_jwks)
 
+    token = None
+
     for key in signing_keys:
         try:
-            return jwt.JWT(jwt=credentials.credentials, key=key)
+            token = jwt.JWT(jwt=credentials.credentials, key=key)
         except jws.InvalidJWSSignature:
             continue
 
-    raise credentials_exception
+    if token is None:
+        raise credentials_exception
+
+    claims = json.loads(token.claims)
+
+    if claims["aud"] != client_id:
+        raise credentials_exception
+
+    return token

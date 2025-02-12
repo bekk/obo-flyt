@@ -22,7 +22,7 @@ def read_root(token: Annotated[jwt.JWT, Depends(check_valid_token)]):
 
 
 # endpoint to exchange token and ping another service
-@app.get("/ping/{serivce}")
+@app.get("/ping/{service}")
 def ping(service: str, valid_token: Annotated[jwt.JWT, Depends(check_valid_token)]):
     audience = f"kind-skiperator:obo:{service}"
     exchanged_token = exchange_token(valid_token, audience)

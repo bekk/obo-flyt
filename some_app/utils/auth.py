@@ -49,9 +49,8 @@ async def check_valid_token(
 
     fakeauth_jwk_url = os.getenv("FAKEAUTH_JWKS_URI") or ""
     fakeauth_jwks = get_public_jwks(fakeauth_jwk_url, ttl_hash=get_ttl_hash())
-    fakeauth_signing_keys = [key for key in fakeauth_jwks if key.use == "sig"]
 
-    signing_keys.extend(fakeauth_signing_keys)
+    signing_keys.extend(fakeauth_jwks)
 
     for key in signing_keys:
         try:

@@ -12,12 +12,14 @@ spec:
       rules:
         - application: tokendings
         - application: fake-auth
+        - application: test-app
     inbound:
       rules:
         - application: tokendings
-        # - application: test-app
         - application: fake-auth
   env:
+    - name: FAKEAUTH_JWKS_URI
+      value: http://fake-auth:6348/discovery/v2.0/keys
     - name: TOKEN_X_PRIVATE_JWK
       valueFrom:
         secretKeyRef:
@@ -34,6 +36,12 @@ spec:
       valueFrom:
         secretKeyRef:
           key: TOKEN_X_TOKEN_ENDPOINT
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_JWKS_URI
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_JWKS_URI
           name: jwker-some-app
           optional: false
 

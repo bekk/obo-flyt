@@ -50,3 +50,4 @@ spec:
         - application: database
         - application: jwker
         - application: some-app
+        - application: test-app

@@ -4,7 +4,7 @@ from functools import lru_cache
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jwcrypto import jwk, jwt
+from jwcrypto import jwk, jwt, jws
 from jwt.exceptions import InvalidTokenError
 import time
 import requests
@@ -50,7 +50,7 @@ async def check_valid_token(
     for key in signing_keys:
         try:
             jwt.JWT(jwt=credentials.credentials).validate(key)
-        except InvalidTokenError:
+        except jws.InvalidJWSSignature:
             continue
         else:
             return credentials.credentials

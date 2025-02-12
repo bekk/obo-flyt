@@ -3,14 +3,14 @@ from typing import Annotated
 from functools import lru_cache
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwcrypto import jwk, jwt
 from jwt.exceptions import InvalidTokenError
 import time
 import requests
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+security = HTTPBearer()
 
 
 def get_ttl_hash(seconds=3600):
@@ -34,7 +34,9 @@ def get_public_jwks(url, ttl_hash=None):
     return jwk_keys
 
 
-async def check_valid_token(token: Annotated[str, Depends(oauth2_scheme)]):
+async def check_valid_token(
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -47,10 +49,10 @@ async def check_valid_token(token: Annotated[str, Depends(oauth2_scheme)]):
 
     for key in signing_keys:
         try:
-            jwt.JWT(jwt=token).validate(key)
+            jwt.JWT(jwt=credentials.credentials).validate(key)
         except InvalidTokenError:
             continue
         else:
-            return token
+            return credentials.credentials
 
     raise credentials_exception

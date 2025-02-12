@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-COPY ../utils ./utils
-
 RUN pip install --upgrade -r ./requirements.txt
 
 CMD ["fastapi", "run", "main.py", "--port", "80", "--reload"]

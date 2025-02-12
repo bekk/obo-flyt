@@ -1,3 +1,4 @@
+import os
 from typing import Annotated
 from fastapi import Depends, FastAPI
 from utils.auth import check_valid_token
@@ -9,13 +10,15 @@ import json
 app = FastAPI()
 
 
+client_id = os.getenv("TOKEN_X_CLIENT_ID") or ""
+
+
 @app.get("/")
 def read_root(token: Annotated[jwt.JWT, Depends(check_valid_token)]):
     claims = json.loads(token.claims)
     you_are = claims["client_id"] if "client_id" in claims else claims["sub"]
-    i_am = claims["aud"]
 
-    return {"Hello": you_are, "i am": i_am}
+    return {"Hello": you_are, "i am": client_id}
 
 
 # endpoint to exchange token and ping another service

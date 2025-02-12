@@ -1,3 +1,43 @@
+apiVersion: skiperator.kartverket.no/v1alpha1
+kind: Application
+metadata:
+  name: some-app
+  namespace: obo
+spec:
+  image: ghcr.io/bekk/obo-flyt/some-app:main
+  port: 80
+  replicas: 1
+  accessPolicy:
+    outbound:
+      rules:
+        - application: tokendings
+        - application: fake-auth
+    inbound:
+      rules:
+        - application: tokendings
+        - application: some-app
+        - application: fake-auth
+  env:
+    - name: TOKEN_X_PRIVATE_JWK
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_PRIVATE_JWK
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_CLIENT_ID
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_TOKEN_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_TOKEN_ENDPOINT
+          name: jwker-some-app
+          optional: false
+
+---
 apiVersion: nais.io/v1
 kind: Jwker
 metadata:
@@ -7,11 +47,8 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: tokendings
-        - application: fake-auth
         - application: some-app
     outbound:
       rules:
         - application: tokendings
-        - application: fake-auth
-  secretName: test-app
+  secretName: jwker-test-app

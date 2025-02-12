@@ -1,62 +1,30 @@
-from fastapi import FastAPI, Request
-from jwcrypto import jwk, jwt
-from datetime import datetime, timedelta
-from base64 import b64decode
+from typing import Annotated
+from fastapi import Depends, FastAPI
+from utils.auth import check_valid_token
+from utils.tokenx import exchange_token
+from jwcrypto import jwt
 import requests
-import uuid
-import os
 
 app = FastAPI()
 
 
-def read_secret(secrets, name):
-    return b64decode(secrets.data[name]).decode()
-
-
-def create_client_assertion():
-    # id registered in tokendings
-    CLIENT_ID = os.getenv("TOKEN_X_CLIENT_ID")
-    # jwk_key = key registered in tokendings
-    key_string = os.getenv("TOKEN_X_PRIVATE_JWK")
-    TOKEN_ENDPOINT = os.getenv("TOKEN_X_TOKEN_ENDPOINT")
-
-    client_jwks = jwk.JWK.from_json(key_string)
-    claims = {
-        "sub": CLIENT_ID,  # who am i
-        "iss": CLIENT_ID,  # who am i
-        "aud": TOKEN_ENDPOINT,  # always tokendings when exchanging
-        "jti": str(uuid.uuid4()),
-        "nbf": int(datetime.utcnow().timestamp()),
-        "iat": int(datetime.utcnow().timestamp()),
-        "exp": int((datetime.utcnow() + timedelta(seconds=119)).timestamp()),
-    }
-    token = jwt.JWT(header={"alg": "RS256", "typ": "JWT"}, claims=claims)
-    token.make_signed_token(client_jwks)
-    return token.serialize()
-
-
-@app.get("/test/token/{aud}/{token}")
-def request_token(aud: str, token: str):
-    client_assertion_token = create_client_assertion()
-
-    TOKEN_ENDPOINT = os.getenv("TOKEN_X_TOKEN_ENDPOINT") or ""
-
-    payload = {
-        "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
-        "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-        "client_assertion": client_assertion_token,  # assertion with key registered in tokendings
-        "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
-        "subject_token": token,  # original token from IDP
-        "audience": aud,  # who do i want to talk to
-    }
-
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    res = requests.post(TOKEN_ENDPOINT, data=payload, headers=headers)
-    if res.status_code > 200:
-        return res.content
-    return res.json()
-
-
 @app.get("/")
-def read_root():
-    return {"Hello": "World!"}
+def read_root(valid_token: Annotated[str, Depends(check_valid_token)]):
+    token = jwt.JWT(jwt=valid_token)
+    return {"Hello": token.claims["client_id"]}
+
+
+# endpoint to exchange token and ping another service
+@app.get("/ping/{serivce}")
+def ping(service: str, valid_token: Annotated[str, Depends(check_valid_token)]):
+    audience = f"kind-skiperator:obo:{service}"
+    exchanged_token = exchange_token(valid_token, audience)
+
+    res = requests.get(
+        f"http://{service}", headers={"Authorization": f"Bearer {exchanged_token}"}
+    )
+
+    if res.status_code != 200:
+        return {"error": res.content}
+
+    return res.json()

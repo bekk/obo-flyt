@@ -4,18 +4,16 @@ from utils.auth import check_valid_token
 from utils.tokenx import exchange_token
 from jwcrypto import jwt
 import requests
+import json
 
 app = FastAPI()
 
 
 @app.get("/")
 def read_root(token: Annotated[jwt.JWT, Depends(check_valid_token)]):
-    you_are = (
-        token.claims["client_id"]
-        if "client_id" in token.claims
-        else token.claims["sub"]
-    )
-    i_am = token.claims["aud"]
+    claims = json.loads(token.claims)
+    you_are = claims["client_id"] if "client_id" in claims else claims["sub"]
+    i_am = claims["aud"]
 
     return {"Hello": you_are, "i am": i_am}
 

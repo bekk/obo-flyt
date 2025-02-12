@@ -5,7 +5,6 @@ from functools import lru_cache
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwcrypto import jwk, jwt, jws
-from jwt.exceptions import InvalidTokenError
 import time
 import requests
 

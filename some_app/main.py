@@ -28,7 +28,8 @@ def ping(service: str, valid_token: Annotated[jwt.JWT, Depends(check_valid_token
     exchanged_token = exchange_token(valid_token, audience)
 
     res = requests.get(
-        f"http://{service}:6349", headers={"Authorization": f"Bearer {exchanged_token}"}
+        f"http://{service}:6349",
+        headers={"Authorization": f"Bearer {exchanged_token['access_token']}"},
     )
 
     if res.status_code != 200:

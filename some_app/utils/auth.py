@@ -54,10 +54,8 @@ async def check_valid_token(
 
     for key in signing_keys:
         try:
-            jwt.JWT(jwt=credentials.credentials).validate(key)
+            return jwt.JWT(jwt=credentials.credentials, key=key)
         except jws.InvalidJWSSignature:
             continue
-        else:
-            return credentials.credentials
 
     raise credentials_exception

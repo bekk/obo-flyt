@@ -9,9 +9,15 @@ app = FastAPI()
 
 
 @app.get("/")
-def read_root(valid_token: Annotated[str, Depends(check_valid_token)]):
-    token = jwt.JWT(jwt=valid_token)
-    return {"Hello": token.claims["client_id"]}
+def read_root(token: Annotated[jwt.JWT, Depends(check_valid_token)]):
+    you_are = (
+        token.claims["client_id"]
+        if "client_id" in token.claims
+        else token.claims["sub"]
+    )
+    i_am = token.claims["aud"]
+
+    return {"Hello": you_are, "i am": i_am}
 
 
 # endpoint to exchange token and ping another service

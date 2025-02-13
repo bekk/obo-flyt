@@ -17,7 +17,7 @@ def test_name(hostname: str):
 
 @app.get("/health")
 def health():
-    return "ok"
+    return "ok man!"
 
 
 # read by tokendings at starup

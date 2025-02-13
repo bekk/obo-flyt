@@ -33,11 +33,13 @@ def create_client_assertion(client_id: str):
     token.make_signed_token(client_jwks)
     return token.serialize()
 
+
 def get_sub_token(client_id: str):
     res = requests.get(f"http://fake-auth:6348/fake_auth/{client_id}")
     if res.status_code != 200:
         return None
     return res.text.replace('"', '')
+
 
 @app.get("/v2/test/token/{aud}/")
 def request_token_v2(aud: str):
@@ -47,7 +49,9 @@ def request_token_v2(aud: str):
 
     token = get_sub_token(CLIENT_ID)
     if token == None:
-        raise HTTPException(status_code=424, detail="could not get token for client")
+        raise HTTPException(
+            status_code=424, detail="could not get token for client")
+    print("Token from fake auth (IDP): ", token)
     client_assertion_token = create_client_assertion(CLIENT_ID)
 
     TOKEN_ENDPOINT = os.getenv("TOKEN_X_TOKEN_ENDPOINT") or ""
@@ -55,7 +59,8 @@ def request_token_v2(aud: str):
     payload = {
         "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
         "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-        "client_assertion": client_assertion_token,  # assertion with key registered in tokendings
+        # assertion with key registered in tokendings
+        "client_assertion": client_assertion_token,
         "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
         "subject_token": token,  # original token from IDP
         "audience": aud,  # who do i want to talk to
@@ -66,6 +71,7 @@ def request_token_v2(aud: str):
     if res.status_code > 200:
         return res.content
     return res.json()
+
 
 @app.get("/test/token/{aud}/{token}")
 def request_token(aud: str, token: str):
@@ -79,7 +85,8 @@ def request_token(aud: str, token: str):
     payload = {
         "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
         "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-        "client_assertion": client_assertion_token,  # assertion with key registered in tokendings
+        # assertion with key registered in tokendings
+        "client_assertion": client_assertion_token,
         "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
         "subject_token": token,  # original token from IDP
         "audience": aud,  # who do i want to talk to
@@ -90,6 +97,7 @@ def request_token(aud: str, token: str):
     if res.status_code > 200:
         return res.content
     return res.json()
+
 
 @app.get("/")
 def read_root():

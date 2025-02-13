@@ -33,7 +33,7 @@ def request_token(aud: str, token: str):
     if CLIENT_ID is None:
         raise HTTPException(status_code=500, detail="missing client id env")
 
-    return exchange_token(jwt.JWT(jwt=token), aud)
+    return exchange_token(token, aud)
 
 
 @app.get("/")
@@ -47,7 +47,7 @@ def read_root(token: Annotated[jwt.JWT, Depends(check_valid_token)]):
 # endpoint to exchange token and ping another service
 @app.get("/ping/{service}")
 def ping(service: str, valid_token: Annotated[jwt.JWT, Depends(check_valid_token)]):
-    return exchange_and_ping(service, valid_token)
+    return exchange_and_ping(service, valid_token.serialize())
 
 
 # endpoint to login with fakeauth and ping another service
@@ -58,7 +58,7 @@ def login_and_ping(service: str):
     return exchange_and_ping(service, token)
 
 
-def exchange_and_ping(service: str, token: jwt.JWT) -> dict:
+def exchange_and_ping(service: str, token: str) -> dict:
     audience = f"kind-skiperator:obo:{service}"
     exchanged_token = exchange_token(token, audience)
 

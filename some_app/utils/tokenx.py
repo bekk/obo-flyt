@@ -28,7 +28,7 @@ def create_client_assertion():
 
 
 def exchange_token(
-    token: jwt.JWT,
+    token: str,
     aud: str,
 ):
     client_assertion_token = create_client_assertion()
@@ -40,7 +40,7 @@ def exchange_token(
         "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
         "client_assertion": client_assertion_token,  # assertion with key registered in tokendings
         "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
-        "subject_token": token.serialize(),  # original token from IDP
+        "subject_token": token,
         "audience": aud,  # who do i want to talk to
     }
 

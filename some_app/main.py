@@ -1,6 +1,6 @@
 import os
 from typing import Annotated
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from utils.auth import check_valid_token
 from utils.login import login_with_fake_auth
 from utils.tokenx import exchange_token
@@ -12,6 +12,28 @@ app = FastAPI()
 
 
 client_id = os.getenv("TOKEN_X_CLIENT_ID") or ""
+
+
+@app.get("/v2/test/token/{aud}/")
+def request_token_v2(aud: str):
+    CLIENT_ID = os.getenv("TOKEN_X_CLIENT_ID")
+    if CLIENT_ID is None:
+        raise HTTPException(status_code=500, detail="missing client id env")
+
+    token = login_with_fake_auth(CLIENT_ID)
+    if token is None:
+        raise HTTPException(status_code=424, detail="could not get token for client")
+    print("Token from fake auth (IDP): ", token)
+    return exchange_token(token, aud)
+
+
+@app.get("/test/token/{aud}/{token}")
+def request_token(aud: str, token: str):
+    CLIENT_ID = os.getenv("TOKEN_X_CLIENT_ID")
+    if CLIENT_ID is None:
+        raise HTTPException(status_code=500, detail="missing client id env")
+
+    return exchange_token(jwt.JWT(jwt=token), aud)
 
 
 @app.get("/")

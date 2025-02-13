@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from jwks import get_or_create_jwk
+from jwks import generate_jwk, get_or_create_jwk
 from jwcrypto import jwk, jwt
 from datetime import datetime, timedelta
 from base64 import b64decode
@@ -85,7 +85,7 @@ def read_root():
 @app.post("/override_key")
 def override_key():
     global key
-    key = get_or_create_jwk()
+    key = generate_jwk()
 
 
 @app.get("/discovery/v2.0/keys")

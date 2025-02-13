@@ -9,4 +9,6 @@ def login_with_fake_auth(audience: str):
     response = requests.get(req_url)
     if response.status_code != 200:
         raise Exception(response.content)
-    return response.json()
+    token = response.json()
+    print("Token from fake auth (IDP): ", token)
+    return token

@@ -30,7 +30,7 @@ def create_client_assertion():
 def exchange_token(
     token: str,
     aud: str,
-):
+) -> dict:
     client_assertion_token = create_client_assertion()
 
     TOKEN_ENDPOINT = os.getenv("TOKEN_X_TOKEN_ENDPOINT") or ""
@@ -48,7 +48,7 @@ def exchange_token(
     res = requests.post(TOKEN_ENDPOINT, data=payload, headers=headers)
     if res.status_code > 200:
         raise Exception(res.content)
-    token = res.json()
-    print("Exchanged token: ", token)
+    new_token = res.json()
+    print("Exchanged token: ", new_token)
 
-    return token
+    return new_token

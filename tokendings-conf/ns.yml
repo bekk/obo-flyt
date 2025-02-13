@@ -2,5 +2,14 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: obo
-  labels: 
-    istio.io/rev : default
+  labels:
+    istio.io/rev: default
+---
+# config map with cluster name
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-info
+  namespace: obo
+data:
+  CLUSTER_NAME: "kind-skiperator"

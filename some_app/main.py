@@ -12,6 +12,8 @@ app = FastAPI()
 
 
 client_id = os.getenv("TOKEN_X_CLIENT_ID") or ""
+NAMESPACE = os.getenv("POD_NAMESPACE") or ""
+CLUSTER_NAME = os.getenv("CLUSTER_NAME") or ""
 
 
 @app.get("/v2/test/token/{aud}/")
@@ -59,7 +61,7 @@ def login_and_ping(service: str):
 
 
 def exchange_and_ping(service: str, token: str) -> dict:
-    audience = f"kind-skiperator:obo:{service}"
+    audience = f"{CLUSTER_NAME}:{NAMESPACE}:{service}"
     exchanged_token = exchange_token(token, audience)
 
     res = requests.get(

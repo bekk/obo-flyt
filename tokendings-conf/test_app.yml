@@ -18,6 +18,13 @@ spec:
         - application: some-app
         - application: fake-auth
   env:
+    - name: CLUSTER_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: cluster-info
+          key: CLUSTER_NAME
+    - name: POD_NAMESPACE
+      value: metadata.namespace
     - name: FAKEAUTH_LOGIN_URL
       value: http://fake-auth:6348/fake_auth
     - name: FAKEAUTH_JWKS_URI

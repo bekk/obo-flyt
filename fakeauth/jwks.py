@@ -4,9 +4,11 @@ import json
 
 path = "./jwks.json"
 
+
 def save_to_file(key):
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(key, f)
+
 
 def load_from_file():
     try:
@@ -18,6 +20,7 @@ def load_from_file():
         key = None
     return key
 
+
 def get_or_create_jwk():
     key = load_from_file()
     if key == None:
@@ -27,8 +30,10 @@ def get_or_create_jwk():
     print("priv: ", key.export_public())
     return key
 
+
 def generate_jwk():
     return jwk.JWK.generate(kty='RSA', size=2048, kid="1234")
+
 
 def create_signed_jwt(key):
     claims = {
@@ -43,10 +48,10 @@ def create_signed_jwt(key):
     token.make_signed_token(key)
     return token.serialize()
 
+
 def verify_jwt(token, key):
     try:
         verified_token = jwt.JWT(key=key, jwt=token)
         return verified_token.claims
     except Exception as e:
         return f"Verification failed: {e}"
-

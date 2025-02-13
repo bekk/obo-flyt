@@ -7,17 +7,6 @@ spec:
   image: ghcr.io/bekk/obo-flyt/fake-auth:main
   port: 6348
   replicas: 1
-  env:
-    - name: AUTH_CLIENT_ID
-      value: dfb2cec9-3b6d-456b-a14f-649236247e3d
-    - name: AUTH_CLIENT_SECRET
-      value: secret
-    - name: AUTH_SCOPE
-      value: api://dfb2cec9-3b6d-456b-a14f-649236247e3d/.default
-    - name: AUTH_WELL_KNOWN_URL
-      value: https://login.microsoftonline.com/7531b79e-fd42-4826-bff2-131d82c7b557/v2.0/.well-known/openid-configuration
-    - name: TOKENDINGS_URL
-      value: http://tokendings:7456
   accessPolicy:
     outbound:
       rules:

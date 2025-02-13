@@ -16,7 +16,6 @@ spec:
     inbound:
       rules:
         - application: tokendings
-        - application: fake-auth
   env:
     - name: FAKEAUTH_LOGIN_URL
       value: http://fake-auth:6348/fake_auth

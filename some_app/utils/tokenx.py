@@ -48,4 +48,7 @@ def exchange_token(
     res = requests.post(TOKEN_ENDPOINT, data=payload, headers=headers)
     if res.status_code > 200:
         raise Exception(res.content)
-    return res.json()
+    token = res.json()
+    print("Exchanged token: ", token)
+
+    return token

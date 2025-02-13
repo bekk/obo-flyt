@@ -37,15 +37,16 @@ def get_public_jwks(url, ttl_hash=None):
     return jwk_keys
 
 
+CREDENTIALS_EXCEPTION = HTTPException(
+    status_code=status.HTTP_401_UNAUTHORIZED,
+    detail="Could not validate credentials",
+    headers={"WWW-Authenticate": "Bearer"},
+)
+
+
 async def check_valid_token(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
 ):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-
     tokendings_jwk_url = os.getenv("TOKEN_X_JWKS_URI") or ""
     tokendings_jwks = get_public_jwks(tokendings_jwk_url, ttl_hash=get_ttl_hash())
     signing_keys = [key for key in tokendings_jwks if key.use == "sig"]
@@ -64,11 +65,11 @@ async def check_valid_token(
             continue
 
     if token is None:
-        raise credentials_exception
+        raise CREDENTIALS_EXCEPTION
 
     claims = json.loads(token.claims)
 
     if claims["aud"] != client_id:
-        raise credentials_exception
+        raise CREDENTIALS_EXCEPTION
 
     return token

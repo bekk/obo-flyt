@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Request
-from jwks import get_or_create_jwk
-from auth import get_token
+from jwks import generate_jwk, get_or_create_jwk
 from jwcrypto import jwk, jwt
 from datetime import datetime, timedelta
 from base64 import b64decode
@@ -8,6 +7,7 @@ import requests
 import json
 
 app = FastAPI()
+key = get_or_create_jwk()
 
 
 @app.post("/test_hostname")
@@ -18,7 +18,7 @@ def test_name(hostname: str):
 
 @app.get("/health")
 def health():
-    return "ok"
+    return "ok man!"
 
 
 # read by tokendings at starup
@@ -82,7 +82,10 @@ def read_root():
     return config
 
 
-key = get_or_create_jwk()
+@app.post("/override_key")
+def override_key():
+    global key
+    key = generate_jwk()
 
 
 @app.get("/discovery/v2.0/keys")

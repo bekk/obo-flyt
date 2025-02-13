@@ -1,9 +1,9 @@
-version: '3'
+version: "3"
 services:
   fake_auth_server:
     image: ghcr.io/fredrikmorstad/fake_auth/fake_auth:latest
     hostname: fake_auth
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
     volumes:
@@ -12,8 +12,6 @@ services:
       - "6348:6348"
     networks:
       - obo-backend
-    # env_file:
-    #   - "local.env"
 
 networks:
   obo-backend:

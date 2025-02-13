@@ -1,7 +1,6 @@
 run_docker_cmd() {
     docker compose -f fakeauth/docker-compose.yaml $1
     docker compose -f some_app/docker-compose.yaml $1
-    docker compose -f test_app/docker-compose.yaml $1
 }
 
 parse_args(){

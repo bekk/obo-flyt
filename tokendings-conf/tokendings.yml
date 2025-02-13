@@ -38,8 +38,6 @@ spec:
       rules:
         - application: fake-auth
         - application: database
-      external:
-        - host: login.microsoftonline.com
     inbound:
       rules:
         - application: fake-auth

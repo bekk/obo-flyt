@@ -2,7 +2,7 @@ import requests
 import os
 from jwcrypto import jwt
 
-FAKE_AUTH_URL = os.getenv("FAKE_AUTH_LOGIN_URL") or ""
+FAKE_AUTH_URL = os.getenv("FAKEAUTH_LOGIN_URL") or ""
 
 
 def login_with_fake_auth(audience: str) -> jwt.JWT:

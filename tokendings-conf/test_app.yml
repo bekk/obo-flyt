@@ -18,6 +18,8 @@ spec:
         - application: some-app
         - application: fake-auth
   env:
+    - name: FAKEAUTH_LOGIN_URL
+      value: http://fake-auth:6348/fake_auth
     - name: FAKEAUTH_JWKS_URI
       value: http://fake-auth:6348/discovery/v2.0/keys
     - name: TOKEN_X_PRIVATE_JWK

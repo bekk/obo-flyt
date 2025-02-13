@@ -20,6 +20,7 @@ def get_ttl_hash(seconds=3600):
     return round(time.time() / seconds)
 
 
+@lru_cache
 def get_public_jwks(url, ttl_hash=None):
     del ttl_hash
     jwk_keys = []

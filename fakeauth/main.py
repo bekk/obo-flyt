@@ -7,6 +7,7 @@ import requests
 import json
 
 app = FastAPI()
+key = get_or_create_jwk()
 
 
 @app.post("/test_hostname")
@@ -81,7 +82,10 @@ def read_root():
     return config
 
 
-key = get_or_create_jwk()
+@app.post("/override_key")
+def override_key():
+    global key
+    key = get_or_create_jwk()
 
 
 @app.get("/discovery/v2.0/keys")

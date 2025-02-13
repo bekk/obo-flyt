@@ -12,12 +12,25 @@ spec:
       rules:
         - application: tokendings
         - application: fake-auth
+        - application: test-app
     inbound:
       rules:
         - application: tokendings
-        # - application: test-app
-        # - application: fake-auth
   env:
+    - name: CLUSTER_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: cluster-info
+          key: CLUSTER_NAME
+          optional: false
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: FAKEAUTH_LOGIN_URL
+      value: http://fake-auth:6348/fake_auth
+    - name: FAKEAUTH_JWKS_URI
+      value: http://fake-auth:6348/discovery/v2.0/keys
     - name: TOKEN_X_PRIVATE_JWK
       valueFrom:
         secretKeyRef:
@@ -34,6 +47,12 @@ spec:
       valueFrom:
         secretKeyRef:
           key: TOKEN_X_TOKEN_ENDPOINT
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_JWKS_URI
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_JWKS_URI
           name: jwker-some-app
           optional: false
 
@@ -55,44 +74,3 @@ spec:
         - application: fake-auth
         - application: test-app
   secretName: jwker-some-app
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: some-app
-  name: some-app
-  namespace: obo
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  labels:
-    app: some-app
-  name: some-app
-  namespace: obo
-rules:
-  - apiGroups:
-      - "*"
-    resources:
-      - secrets
-    verbs:
-      - get
-      - watch
-      - list
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  labels:
-    app: some-app
-  name: some-app
-  namespace: obo
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: some-app
-subjects:
-  - kind: ServiceAccount
-    name: some-app
-    namespace: obo

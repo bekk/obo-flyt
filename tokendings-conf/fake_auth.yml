@@ -17,3 +17,4 @@ spec:
       rules:
         - application: tokendings
         - application: some-app
+        - application: test-app

@@ -11,8 +11,6 @@ spec:
     outbound:
       rules:
         - application: tokendings
-      external:
-        - host: login.microsoftonline.com
     inbound:
       rules:
         - application: tokendings

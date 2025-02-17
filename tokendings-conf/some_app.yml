@@ -16,6 +16,7 @@ spec:
     inbound:
       rules:
         - application: tokendings
+        - application: test-app
   env:
     - name: CLUSTER_NAME
       valueFrom:
@@ -30,7 +31,7 @@ spec:
     - name: FAKEAUTH_LOGIN_URL
       value: http://fake-auth:6348/fake_auth
     - name: FAKEAUTH_JWKS_URI
-      value: http://fake-auth:6348/discovery/v2.0/keys
+      value: http://fake-auth:6348/discovery/v2.0/keys/
     - name: TOKEN_X_PRIVATE_JWK
       valueFrom:
         secretKeyRef:
@@ -55,7 +56,68 @@ spec:
           key: TOKEN_X_JWKS_URI
           name: jwker-some-app
           optional: false
-
+--- 
+apiVersion: skiperator.kartverket.no/v1alpha1
+kind: Application
+metadata:
+  name: texas-some-app
+  namespace: obo
+spec:
+  image: ghcr.io/nais/texas:latest
+  port: 3000
+  env:
+    - name: DOWNSTREAM_APP_NAME
+      value: some-app
+    - name: DOWNSTREAM_APP_NAMESPACE
+      value: obo
+    - name: DOWNSTREAM_APP_CLUSTER
+      value: kind-skiperator
+    - name: MASKINPORTEN_ENABLED
+      value: "false"
+    - name: AZURE_ENABLED
+      value: "false"
+    - name: IDPORTEN_ENABLED
+      value: "false"
+    - name: TOKEN_X_ENABLED
+      value: "true"
+    - name: TOKEN_X_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_CLIENT_ID
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_TOKEN_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_TOKEN_ENDPOINT
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_JWKS_URI
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_JWKS_URI
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_PRIVATE_JWK
+      valueFrom:
+        secretKeyRef:
+          key: TOKEN_X_PRIVATE_JWK
+          name: jwker-some-app
+          optional: false
+    - name: TOKEN_X_ISSUER
+      value: http://tokendings:7456
+    - name: NAIS_POD_NAME
+      value: texas-7986845877-m2d4l
+  replicas: 1
+  accessPolicy:
+    outbound:
+      rules:
+        - application: fake-auth
+        - application: tokendings
+        - application: test-app
+    inbound:
+      rules:
+        - application: some-app
 ---
 apiVersion: nais.io/v1
 kind: Jwker

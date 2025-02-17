@@ -22,7 +22,7 @@ def create_client_assertion():
         "iat": int(datetime.utcnow().timestamp()),
         "exp": int((datetime.utcnow() + timedelta(seconds=119)).timestamp()),
     }
-    token = jwt.JWT(header={"alg": "RS256", "typ": "JWT"}, claims=claims)
+    token = jwt.JWT(header={"alg": "RS256", "typ": "JWT", "kid": client_jwks.kid}, claims=claims)
     token.make_signed_token(client_jwks)
     return token.serialize()
 

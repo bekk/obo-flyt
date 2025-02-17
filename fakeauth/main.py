@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from base64 import b64decode
 import requests
 import json
+import uuid
 
 app = FastAPI()
 key = get_or_create_jwk()
@@ -103,6 +104,6 @@ def generate_sub_token(aud):
         "iat": int(datetime.utcnow().timestamp()),
         "exp": int((datetime.utcnow() + timedelta(days=1)).timestamp()),
     }
-    token = jwt.JWT(header={"alg": "RS256", "type": "JWT"}, claims=claims)
+    token = jwt.JWT(header={"alg": "RS256", "type": "JWT", "kid": str(key.kid)}, claims=claims)
     token.make_signed_token(key)
     return token.serialize()

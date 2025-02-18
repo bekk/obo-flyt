@@ -1,0 +1,3 @@
+[submodule "skiperator"]
+	path = skiperator
+	url = git@github.com:bekk/skiperator.git

@@ -6,8 +6,8 @@ from utils.tokenx import exchange_token
 
 router = APIRouter()
 
-def texas_token_exchange(texasUrl: str, target: str, user_token: str) -> requests.Response:
-    req_url = f"{texasUrl}/api/v1/token/exchange"
+def texas_token_exchange(target: str, user_token: str) -> requests.Response:
+    req_url = "http://localhost:3000/api/v1/token/exchange"
     payload = {
         "target": target,
         "identity_provider": "tokenx",
@@ -15,8 +15,8 @@ def texas_token_exchange(texasUrl: str, target: str, user_token: str) -> request
     }
     return requests.post(req_url, json=payload)
 
-def texas_token_introspect(texasUrl: str, token: str) -> requests.Response:
-    req_url = f"{texasUrl}/api/v1/introspect"
+def texas_token_introspect(token: str) -> requests.Response:
+    req_url = "http://localhost:3000/api/v1/introspect"
     payload = {
         "identity_provider": "tokenx",
         "token": token,
@@ -35,27 +35,15 @@ def token_exchange(target: str):
     except:
         raise HTTPException(424, "error fetching token from idp")
 
-    TEXAS_URL = os.getenv("TEXAS_URL")
-    if TEXAS_URL is None:
-        raise HTTPException(status_code=500, detail="missing texas url env")
-
-    res = texas_token_exchange(TEXAS_URL, target, token)
+    res = texas_token_exchange(target, token)
     if res.status_code != 200:
         raise HTTPException(res.status_code, "error from texas")
     return res.json()
 
+# checks token validity and payload using texas introspect
 @router.get("/introspect/{token}")
 def token_introspect(token: str):
-    TEXAS_URL = os.getenv("TEXAS_URL")
-    if TEXAS_URL is None:
-        raise HTTPException(status_code=500, detail="missing texas url env")
-
-    res = texas_token_introspect(TEXAS_URL, token)
+    res = texas_token_introspect(token)
     if res.status_code != 200:
         raise HTTPException(res.status_code, "error from texas")
     return res.json()
-
-
-
-
-

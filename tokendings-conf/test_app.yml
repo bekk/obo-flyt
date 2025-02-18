@@ -12,6 +12,7 @@ spec:
       rules:
         - application: tokendings
         - application: fake-auth
+        - application: texas-test-app
     inbound:
       rules:
         - application: tokendings
@@ -67,6 +68,8 @@ spec:
   image: ghcr.io/nais/texas:latest
   port: 3000
   env:
+    - name: BIND_ADDRESS
+      value: 0.0.0.0:3000
     - name: DOWNSTREAM_APP_NAME
       value: test-app
     - name: DOWNSTREAM_APP_NAMESPACE

@@ -11,6 +11,7 @@ spec:
     outbound:
       rules:
         - application: tokendings
+        - application: texas-some-app
     inbound:
       rules:
         - application: tokendings

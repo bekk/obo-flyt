@@ -1,6 +1,7 @@
 import os
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException
+import texas
 from utils.auth import check_valid_token
 from utils.login import login_with_fake_auth
 from utils.tokenx import exchange_token
@@ -9,7 +10,7 @@ import requests
 import json
 
 app = FastAPI()
-
+app.include_router(texas.router, prefix="/texas", tags=["texas"])
 
 client_id = os.getenv("TOKEN_X_CLIENT_ID") or ""
 NAMESPACE = os.getenv("POD_NAMESPACE") or ""

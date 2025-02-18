@@ -4,20 +4,19 @@ metadata:
   name: test-app
   namespace: obo
 spec:
-  image: ghcr.io/bekk/obo-flyt/some-app:pr-9
+  image: ghcr.io/bekk/obo-flyt/some-app:main
   port: 6349
   replicas: 1
   accessPolicy:
+    tokenX: true
+    texas: true
     outbound:
       rules:
         - application: tokendings
         - application: fake-auth
-        - application: texas-test-app
     inbound:
       rules:
-        - application: tokendings
         - application: some-app
-        - application: fake-auth
   env:
     - name: CLUSTER_NAME
       valueFrom:
@@ -33,109 +32,3 @@ spec:
       value: http://fake-auth:6348/fake_auth
     - name: FAKEAUTH_JWKS_URI
       value: http://fake-auth:6348/discovery/v2.0/keys
-    - name: TOKEN_X_PRIVATE_JWK
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_PRIVATE_JWK
-          name: jwker-test-app
-          optional: false
-    - name: TOKEN_X_CLIENT_ID
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_CLIENT_ID
-          name: jwker-test-app
-          optional: false
-    - name: TOKEN_X_TOKEN_ENDPOINT
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_TOKEN_ENDPOINT
-          name: jwker-test-app
-          optional: false
-    - name: TOKEN_X_JWKS_URI
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_JWKS_URI
-          name: jwker-test-app
-          optional: false
-    - name: TEXAS_URL
-      value: http://texas-test-app:3000
-
----
-apiVersion: skiperator.kartverket.no/v1alpha1
-kind: Application
-metadata:
-  name: texas-test-app
-  namespace: obo
-spec:
-  # image: ghcr.io/nais/texas:latest
-  image: ghcr.io/fredrikmorstad/texas/texas:latest
-  port: 3000
-  env:
-    - name: BIND_ADDRESS
-      value: 0.0.0.0:3000
-    - name: DOWNSTREAM_APP_NAME
-      value: test-app
-    - name: DOWNSTREAM_APP_NAMESPACE
-      value: obo
-    - name: DOWNSTREAM_APP_CLUSTER
-      value: kind-skiperator
-    - name: MASKINPORTEN_ENABLED
-      value: "false"
-    - name: AZURE_ENABLED
-      value: "false"
-    - name: IDPORTEN_ENABLED
-      value: "false"
-    - name: TOKEN_X_ENABLED
-      value: "true"
-    - name: TOKEN_X_CLIENT_ID
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_CLIENT_ID
-          name: jwker-test-app
-          optional: false
-    - name: TOKEN_X_TOKEN_ENDPOINT
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_TOKEN_ENDPOINT
-          name: jwker-test-app
-          optional: false
-    - name: TOKEN_X_JWKS_URI
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_JWKS_URI
-          name: jwker-test-app
-          optional: false
-    - name: TOKEN_X_PRIVATE_JWK
-      valueFrom:
-        secretKeyRef:
-          key: TOKEN_X_PRIVATE_JWK
-          name: jwker-test-app
-          optional: false
-    - name: TOKEN_X_ISSUER
-      value: http://tokendings:7456
-    - name: NAIS_POD_NAME
-      value: texas-7986845877-m2d4a
-  replicas: 1
-  accessPolicy:
-    outbound:
-      rules:
-        - application: fake-auth
-        - application: tokendings
-    inbound:
-      rules:
-        - application: test-app
----
-apiVersion: nais.io/v1
-kind: Jwker
-metadata:
-  name: test-app
-  namespace: obo
-spec:
-  accessPolicy:
-    inbound:
-      rules:
-        - application: some-app
-    outbound:
-      rules:
-        - application: tokendings
-  secretName: jwker-test-app

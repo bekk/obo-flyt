@@ -1,7 +1,6 @@
 version: "3"
 services:
   fake_auth_server:
-    image: ghcr.io/fredrikmorstad/fake_auth/fake_auth:latest
     hostname: fake_auth
     build:
       context: .

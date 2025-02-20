@@ -4,7 +4,8 @@ metadata:
   name: jwker
   namespace: obo
 spec:
-  image: ghcr.io/fredrikmorstad/jwker/jwker:latest
+  # latest does not work, digest should be updated
+  image: ghcr.io/nais/jwker:2025-01-07-145102-876d62d@sha256:8f6db2eff60db7c24c8d9df510e5f3aa3cee4df4b168ef8084094975f468b549
   port: 8080
   replicas: 1
   env:

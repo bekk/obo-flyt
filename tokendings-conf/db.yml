@@ -21,9 +21,6 @@ spec:
     - emptyDir: postgresql
       mountPath: /var/run/postgresql
   accessPolicy:
-    # outbound:
-    #   rules:
-    #     - application: tokendings
     inbound:
       rules:
         - application: tokendings

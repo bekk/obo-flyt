@@ -9,12 +9,12 @@ from jwcrypto import jwt
 import requests
 import json
 
-app = FastAPI()
-app.include_router(texas.router, prefix="/texas", tags=["texas"])
-
 client_id = os.getenv("TOKEN_X_CLIENT_ID") or ""
 NAMESPACE = os.getenv("POD_NAMESPACE") or ""
 CLUSTER_NAME = os.getenv("CLUSTER_NAME") or ""
+
+app = FastAPI(title=client_id)
+app.include_router(texas.router, prefix="/texas", tags=["texas"])
 
 
 @app.get("/v2/test/token/{aud}/")

@@ -4,7 +4,7 @@ metadata:
   name: test-app
   namespace: obo
 spec:
-  image: ghcr.io/bekk/obo-flyt/some-app:pr-11
+  image: ghcr.io/bekk/obo-flyt/some-app:main
   port: 6349
   replicas: 1
   accessPolicy:
@@ -14,6 +14,7 @@ spec:
       rules:
         - application: tokendings
         - application: fake-auth
+        - application: app-3
     inbound:
       rules:
         - application: some-app

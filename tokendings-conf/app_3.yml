@@ -1,7 +1,7 @@
 apiVersion: skiperator.kartverket.no/v1alpha1
 kind: Application
 metadata:
-  name: some-app
+  name: app-3
   namespace: obo
 spec:
   image: ghcr.io/bekk/obo-flyt/some-app:main
@@ -14,10 +14,10 @@ spec:
       rules:
         - application: tokendings
         - application: fake-auth
-        - application: test-app
+        - application: some-app
     inbound:
       rules:
-        - application: app-3
+        - application: test-app
   env:
     - name: CLUSTER_NAME
       valueFrom:
@@ -32,4 +32,4 @@ spec:
     - name: FAKEAUTH_LOGIN_URL
       value: http://fake-auth:6348/fake_auth
     - name: FAKEAUTH_JWKS_URI
-      value: http://fake-auth:6348/discovery/v2.0/keys/
+      value: http://fake-auth:6348/discovery/v2.0/keys

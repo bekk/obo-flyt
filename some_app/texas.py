@@ -37,9 +37,9 @@ def token_exchange(target: str):
 
     res = texas_token_exchange(target, token)
     if res.status_code != 200:
-        msg = "error exchanging token"
+        msg = {"error":"error inspecting token"}
         if len(res.content) > 0:
-            msg = res.content
+            msg = {"error": str(res.content)}
         raise HTTPException(res.status_code, msg)
     return res.json()
 
@@ -48,8 +48,8 @@ def token_exchange(target: str):
 def token_introspect(token: str):
     res = texas_token_introspect(token)
     if res.status_code != 200:
-        msg = "error inspecting token"
+        msg = {"error":"error inspecting token"}
         if len(res.content) > 0:
-            msg = res.content
+            msg = {"error": str(res.content)}
         raise HTTPException(res.status_code, msg)
     return res.json()

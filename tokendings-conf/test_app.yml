@@ -4,7 +4,7 @@ metadata:
   name: test-app
   namespace: obo
 spec:
-  image: ghcr.io/bekk/obo-flyt/some-app:main
+  image: ghcr.io/bekk/obo-flyt/some-app:pr-11
   port: 6349
   replicas: 1
   accessPolicy:

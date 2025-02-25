@@ -13,3 +13,152 @@ metadata:
   namespace: obo
 data:
   CLUSTER_NAME: "kind-skiperator"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: token-exchange-texas
+  namespace: obo # <-- Must match the namespace of your workload or be in the same mesh scope
+spec:
+  hosts:
+    - "texas.local" # <-- The hostname we'll use in httpCall
+  ports:
+    - number: 3000
+      name: http
+      protocol: HTTP
+  resolution: STATIC
+  endpoints:
+    - address: 127.0.0.1
+      ports:
+        http: 3000
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: tokenx-lua-filter
+  namespace: obo # <-- same namespace as your workload (app: some-app)
+spec:
+  workloadSelector:
+    labels:
+      app: some-app # <-- The label on your pod where you want this filter
+  configPatches:
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_OUTBOUND
+        listener:
+          filterChain:
+            filter:
+              name: envoy.filters.network.http_connection_manager
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.lua
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+            inlineCode: |
+              -- Naive escape function to avoid breaking JSON if values contain quotes/backslashes.
+              local function escape_json(str)
+                if not str then return "" end
+                -- Replace backslash (\) with \\ and double quotes (") with \"
+                str = string.gsub(str, "\\", "\\\\")
+                str = string.gsub(str, "\"", "\\\"")
+                return str
+              end
+
+              -- Build a small JSON object like:
+              -- {
+              --   "target": "<...>",
+              --   "user_token": "<...>",
+              --   "identity_provider": "<...>"
+              -- }
+              local function build_json(target, user_token, provider)
+                local t = escape_json(target)
+                local u = escape_json(user_token)
+                local p = escape_json(provider)
+
+                return "{" ..
+                  "\"target\":\"" .. t .. "\"," ..
+                  "\"user_token\":\"" .. u .. "\"," ..
+                  "\"identity_provider\":\"" .. p .. "\"" ..
+                "}"
+              end
+
+              -- Naive "parser" that uses string matching to capture values from JSON like:
+              -- {
+              --   "access_token": "eyJra...",
+              --   "token_type": "Bearer",
+              --   "expires_in": 3599
+              -- }
+              local function parse_token_response(json_str)
+                -- e.g., find "access_token": "..."
+                local access_token = string.match(json_str, '"access_token"%s*:%s*"([^"]+)"')
+
+                -- find "token_type": "..."
+                local token_type = string.match(json_str, '"token_type"%s*:%s*"([^"]+)"')
+                if not token_type then
+                  token_type = "Bearer"
+                end
+
+                -- find "expires_in": 1234
+                local expires_in = string.match(json_str, '"expires_in"%s*:%s*(%d+)')
+
+                return access_token, token_type, expires_in
+              end
+
+              function envoy_on_request(request_handle)
+                -- 1) Grab headers
+                local auth_header = request_handle:headers():get("Authorization") or ""
+                request_handle:logInfo("Original Authorization: " .. auth_header)
+                
+                local user_token = string.match(auth_header, "^Bearer%s+(.+)$") or auth_header
+                local target_info = request_handle:headers():get("X-TokenX-Target") or ""
+
+                if (target_info == "") then
+                  return
+                end
+
+                -- 2) Build the JSON request body
+                local request_json = build_json(target_info, user_token, "tokenx")
+
+                -- 3) Define the cluster and headers for httpCall to the local sidecar
+                local exchange_cluster = "outbound|3000||texas.local"  -- must match your ServiceEntry
+                local exchange_headers = {
+                  [":method"] = "POST",
+                  [":path"] = "/api/v1/token/exchange",
+                  [":authority"] = "texas.local",
+                  ["Content-Type"] = "application/json"
+                }
+
+                request_handle:logInfo("TokenX exchange => " .. exchange_cluster .. " with JSON: " .. request_json)
+
+                -- 4) Make the blocking httpCall
+                local resp_headers, resp_body = request_handle:httpCall(
+                  exchange_cluster,
+                  exchange_headers,
+                  request_json,
+                  3000  -- timeout (ms)
+                )
+
+                if resp_headers[":status"] ~= "200" then
+                  request_handle:logErr("Token exchange failed: " .. resp_headers[":status"])
+                  request_handle:respond({[":status"] = "502"}, "Token exchange error")
+                  return
+                end
+
+                -- 5) Parse the JSON response naively
+                local access_token, token_type, expires_in = parse_token_response(resp_body)
+                if not access_token then
+                  request_handle:logErr("Invalid token exchange response: " .. resp_body)
+                  request_handle:respond({[":status"] = "502"}, "Bad token exchange response")
+                  return
+                end
+
+                request_handle:logInfo(
+                  string.format("Got token: %s (type=%s, expires_in=%s)", access_token, token_type, tostring(expires_in))
+                )
+
+                -- 6) Replace the Authorization header with the new token
+                request_handle:headers():replace("Authorization", token_type .. " " .. access_token)
+
+                -- Request continues to the actual upstream after this function returns
+              end

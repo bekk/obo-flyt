@@ -74,3 +74,23 @@ def exchange_and_ping(service: str, token: str) -> dict:
         return {"error": res.content}
 
     return res.json()
+
+
+# endpoint to ping directly withouth explicit token exchange
+@app.get("/ping-direct/{service}")
+def ping_direct(service: str):
+    token = login_with_fake_auth(client_id)
+    audience = f"{CLUSTER_NAME}:{NAMESPACE}:{service}"
+
+    res = requests.get(
+        f"http://{service}:6349",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "X-TokenX-Target": audience,
+        },
+    )
+
+    if res.status_code != 200:
+        return {"error": res.content}
+
+    return res.json()

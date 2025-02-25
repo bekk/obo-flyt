@@ -28,8 +28,6 @@ jobs:
             image: ${{ github.repository }}/fake-auth
           - context: ./some_app
             image: ${{ github.repository }}/some-app
-          - context: ./exchange_sidecar
-            image: ${{ github.repository }}/exchange_sidecar
 
     permissions:
       contents: read

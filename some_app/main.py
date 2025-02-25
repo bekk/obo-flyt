@@ -85,7 +85,7 @@ def ping_direct(service: str):
     res = requests.get(
         f"http://{service}:6349",
         headers={
-            "Authorization": f"Bearer {token.serialize()}",
+            "Authorization": f"Bearer {token}",
             "X-TokenX-Target": audience,
         },
     )
